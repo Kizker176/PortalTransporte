@@ -526,3 +526,198 @@ img {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+.introduccion {
+    max-width: 850px;
+    margin: 20px 0 32px;
+    color: #53635a;
+    font-size: 18px;
+}
+
+.contenido-pagina {
+    max-width: 900px;
+    margin: 28px 0;
+    line-height: 1.8;
+}
+
+.contenido-pagina h2,
+.contenido-pagina h3 {
+    color: #176b45;
+}
+
+.contenido-pagina img {
+    height: auto;
+    border-radius: 8px;
+}
+
+.rejilla-servicios .tarjeta-servicio h2 {
+    color: #176b45;
+    font-size: 21px;
+}
+
+.tarjeta-noticia h2 {
+    font-size: 21px;
+    line-height: 1.4;
+}
+
+.tarjeta-noticia h2 a {
+    color: #10452f;
+    text-decoration: none;
+}
+
+.tarjeta-noticia h2 a:hover {
+    text-decoration: underline;
+}
+
+
+.hero-carousel {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 43vw, 620px);
+    overflow: hidden;
+    background: #18334b;
+}
+
+.carousel-slides,
+.carousel-slide {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1;
+}
+
+.carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 35, 60, 0.85) 0%,
+        rgba(0, 35, 60, 0.48) 55%,
+        rgba(0, 35, 60, 0.05) 100%
+    );
+}
+
+.carousel-content {
+    width: min(1100px, 88%);
+    margin: 0 auto;
+    color: white;
+}
+
+.carousel-content h1 {
+    max-width: 720px;
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    margin-bottom: 1rem;
+}
+
+.carousel-content p {
+    max-width: 650px;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.6;
+}
+
+.carousel-button {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 12px 24px;
+    background: #a51c30;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.carousel-control {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #18334b;
+    cursor: pointer;
+}
+
+.carousel-control.prev {
+    left: 20px;
+}
+
+.carousel-control.next {
+    right: 20px;
+}
+
+.carousel-indicators {
+    position: absolute;
+    z-index: 3;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.carousel-indicator {
+    width: 30px;
+    height: 5px;
+    border: 0;
+    padding: 0;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+}
+
+.carousel-indicator.active {
+    background: white;
+}
+
+@media (max-width: 600px) {
+    .hero-carousel {
+        height: 400px;
+    }
+
+    .carousel-control {
+        width: 36px;
+        height: 36px;
+    }
+
+    .carousel-control.prev {
+        left: 10px;
+    }
+
+    .carousel-control.next {
+        right: 10px;
+    }
+
+    .carousel-content {
+        width: 78%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carousel-slide {
+        transition: none;
+    }
+}

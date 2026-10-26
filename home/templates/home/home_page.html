@@ -8,59 +8,92 @@
 {% block content %}
 
 <section class="hero-principal">
-    <div class="hero-carrusel">
-        {% for bloque in page.banners %}
-        {% if bloque.block_type == "banner" %}
-        {% image bloque.value.imagen fill-1400x650 as banner_img %}
+    {% if page.banners %}
+    <section class="hero-carousel" aria-label="Banners principales">
 
-        <article class="hero-banner">
-            <img class="hero-imagen" src="{{ banner_img.url }}" alt="{{ bloque.value.titulo }}">
+        <div class="carousel-slides">
+            {% for bloque in page.banners %}
+            {% with banner=bloque.value %}
+            <article class="carousel-slide {% if forloop.first %}active{% endif %}"
+                aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}">
 
-            <div class="hero-capa"></div>
+                {% image banner.imagen fill-1920x650 as banner_img %}
 
-            <div class="hero-contenido">
-                <span class="etiqueta">
-                    Gobierno de la Gente
-                </span>
+                <img src="{{ banner_img.url }}" alt="{{ banner.imagen.title }}" class="carousel-image">
 
-                <h1>{{ bloque.value.titulo }}</h1>
+                <div class="carousel-overlay">
+                    <div class="carousel-content">
+                        {% if banner.titulo %}
+                        <h1>{{ banner.titulo }}</h1>
+                        {% endif %}
 
-                {% if bloque.value.descripcion %}
-                <p>{{ bloque.value.descripcion }}</p>
-                {% endif %}
+                        {% if banner.descripcion %}
+                        <p>{{ banner.descripcion }}</p>
+                        {% endif %}
 
-                {% if bloque.value.enlace_boton %}
-                <a class="boton boton-dorado" href="{{ bloque.value.enlace_boton }}">
-                    {{ bloque.value.texto_boton|default:"Conocer más" }}
-                </a>
-                {% endif %}
-            </div>
-        </article>
-        {% endif %}
-        {% empty %}
-        <div class="hero-sin-banner">
-            <h1>{{ page.title }}</h1>
-            <p>{{ page.subtitulo }}</p>
+                        {% if banner.texto_boton and banner.enlace_boton %}
+                        <a href="{{ banner.enlace_boton }}" class="carousel-button">
+                            {{ banner.texto_boton }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endwith %}
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+
+        <button class="carousel-control prev" type="button" aria-label="Banner anterior">
+            &#10094;
+        </button>
+
+        <button class="carousel-control next" type="button" aria-label="Banner siguiente">
+            &#10095;
+        </button>
+
+        <div class="carousel-indicators" aria-label="Seleccionar banner">
+            {% for bloque in page.banners %}
+            <button type="button" class="carousel-indicator {% if forloop.first %}active{% endif %}"
+                aria-label="Mostrar banner {{ forloop.counter }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+            </button>
+            {% endfor %}
+        </div>
+
+    </section>
+    {% endif %}
 
     <aside class="menu-lateral">
         <h2>Enlaces de interés</h2>
 
         <nav aria-label="Enlaces de interés">
             {% for bloque in page.menu_lateral %}
-            {% if bloque.block_type == "enlace" %}
-            <a class="menu-lateral-enlace" href="{{ bloque.value.url }}" {% if bloque.value.abrir_nueva_pestana %}
+
+            {% if bloque.block_type == "pagina" %}
+            {% with pagina=bloque.value.pagina %}
+            {% if pagina %}
+            <a class="menu-lateral-enlace" href="{% pageurl pagina %}" {% if bloque.value.abrir_nueva_pestana %}
                 target="_blank" rel="noopener noreferrer" {% endif %}>
+
+                <span>
+                    {{ bloque.value.titulo_personalizado|default:pagina.title }}
+                </span>
+
+                <span aria-hidden="true">↗</span>
+            </a>
+            {% endif %}
+            {% endwith %}
+
+            {% elif bloque.block_type == "enlace_externo" %}
+            <a class="menu-lateral-enlace" href="{{ bloque.value.url }}" target="_blank" rel="noopener noreferrer">
+
                 <span>{{ bloque.value.titulo }}</span>
                 <span aria-hidden="true">↗</span>
             </a>
             {% endif %}
+
             {% empty %}
-            <p class="menu-lateral-vacio">
-                Próximamente encontrarás aquí enlaces de interés.
-            </p>
+            <p>No hay enlaces configurados.</p>
             {% endfor %}
         </nav>
     </aside>

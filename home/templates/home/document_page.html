@@ -1,0 +1,38 @@
+{% extends "home/base.html" %}
+{% load wagtaildocs_tags %}
+
+{% block title %}
+{{ page.title }} | Transparencia
+{% endblock %}
+
+{% block content %}
+<section class="seccion">
+    <div class="contenedor">
+        <span class="sobrelinea">Transparencia</span>
+        <h1>{{ page.title }}</h1>
+
+        {% if page.descripcion %}
+        <p>{{ page.descripcion }}</p>
+        {% endif %}
+
+        {% if page.documento %}
+        <div class="tarjeta-servicio tarjeta-contenido">
+            <h2>Documento disponible</h2>
+
+            {% if page.fecha_documento %}
+            <p>
+                Fecha:
+                {{ page.fecha_documento|date:"d/m/Y" }}
+            </p>
+            {% endif %}
+
+            <a class="boton boton-verde" href="{% url 'wagtaildocs_serve' page.documento.id %}">
+                Descargar documento
+            </a>
+        </div>
+        {% else %}
+        <p>El documento aún no está disponible.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

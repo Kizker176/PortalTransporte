@@ -1,0 +1,42 @@
+{% extends "home/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}
+{{ page.title }} | Secretaría de Gobierno
+{% endblock %}
+
+{% block content %}
+<section class="seccion">
+    <div class="contenedor">
+        <span class="sobrelinea">Secretaría de Gobierno</span>
+
+        <h1>{{ page.title }}</h1>
+
+        {% if page.intro %}
+        <p class="introduccion">{{ page.intro }}</p>
+        {% endif %}
+
+        {% if page.body %}
+        <div class="contenido-pagina">
+            {{ page.body|richtext }}
+        </div>
+        {% endif %}
+
+        <div class="rejilla-servicios">
+            {% for child in page.get_children.live %}
+            <article class="tarjeta-servicio">
+                <div class="tarjeta-contenido">
+                    <h2>{{ child.title }}</h2>
+
+                    <a href="{% pageurl child %}" class="enlace-mas">
+                        Consultar información →
+                    </a>
+                </div>
+            </article>
+            {% empty %}
+            <p>Próximamente publicaremos más información.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

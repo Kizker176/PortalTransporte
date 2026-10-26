@@ -1,0 +1,54 @@
+{% extends "home/base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}
+{{ page.title }} | Secretaría de Gobierno
+{% endblock %}
+
+{% block content %}
+<section class="seccion noticias">
+    <div class="contenedor">
+        <span class="sobrelinea">Información oficial</span>
+        <h1>{{ page.title }}</h1>
+
+        {% if page.intro %}
+        <p>{{ page.intro }}</p>
+        {% endif %}
+
+        <div class="rejilla-noticias">
+            {% for noticia in page.get_children.live %}
+            {% with item=noticia.specific %}
+            <article class="tarjeta-noticia">
+                {% if item.imagen %}
+                {% image item.imagen fill-600x350 as noticia_img %}
+                <img src="{{ noticia_img.url }}" alt="{{ item.title }}" loading="lazy">
+                {% endif %}
+
+                <div class="tarjeta-contenido">
+                    {% if item.fecha_publicacion %}
+                    <time datetime="{{ item.fecha_publicacion|date:'Y-m-d' }}">
+                        {{ item.fecha_publicacion|date:"d/m/Y" }}
+                    </time>
+                    {% endif %}
+
+                    <h2>
+                        <a href="{% pageurl noticia %}">
+                            {{ item.title }}
+                        </a>
+                    </h2>
+
+                    <p>{{ item.resumen }}</p>
+
+                    <a href="{% pageurl noticia %}" class="enlace-mas">
+                        Leer noticia →
+                    </a>
+                </div>
+            </article>
+            {% endwith %}
+            {% empty %}
+            <p>Próximamente publicaremos noticias.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -7,7 +7,36 @@ from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.fields import RichTextField
+from wagtail.documents import get_document_model_string
+from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.blocks import PageChooserBlock
 
+class BannerBlock(blocks.StructBlock):
+        imagen = ImageChooserBlock(
+            label="Imagen del banner"
+        )
+        titulo = blocks.CharBlock(
+            max_length=150,
+            required=False,
+            label="Título"
+        )
+        descripcion = blocks.TextBlock(
+            required=False,
+            label="Descripción"
+        )
+        texto_boton = blocks.CharBlock(
+            max_length=50,
+            required=False,
+            label="Texto del botón"
+        )
+        enlace_boton = blocks.URLBlock(
+            required=False,
+            label="Enlace del botón"
+        )
+
+class Meta:
+    label = "Banner"
+    icon = "image"
 
 class HomePage(Page):
     subtitulo = models.CharField(
@@ -18,39 +47,46 @@ class HomePage(Page):
 
     banners = StreamField(
         [
-            (
-                "banner",
-                blocks.StructBlock(
-                    [
-                        ("titulo", blocks.CharBlock(max_length=200)),
-                        (
-                            "descripcion",
-                            blocks.TextBlock(required=False)
-                        ),
-                        (
-                            "imagen",
-                            ImageChooserBlock()
-                        ),
-                        (
-                            "texto_boton",
-                            blocks.CharBlock(required=False)
-                        ),
-                        (
-                            "enlace_boton",
-                            blocks.URLBlock(required=False)
-                        ),
-                    ]
-                )
-            )
+            ("banner", BannerBlock()),
         ],
         blank=True,
-        use_json_field=True
+        use_json_field=True,
+        verbose_name="Carrusel de banners",
     )
 
     menu_lateral = StreamField(
         [
             (
-                "enlace",
+                "pagina",
+                blocks.StructBlock(
+                    [
+                        (
+                            "pagina",
+                            PageChooserBlock(
+                                label="Seleccionar página"
+                            )
+                        ),
+                        (
+                            "titulo_personalizado",
+                            blocks.CharBlock(
+                                required=False,
+                                max_length=100,
+                                label="Título personalizado"
+                            )
+                        ),
+                        (
+                            "abrir_nueva_pestana",
+                            blocks.BooleanBlock(
+                                required=False,
+                                default=False,
+                                label="Abrir en nueva pestaña"
+                            )
+                        ),
+                    ]
+                )
+            ),
+            (
+                "enlace_externo",
                 blocks.StructBlock(
                     [
                         (
@@ -63,21 +99,12 @@ class HomePage(Page):
                         (
                             "url",
                             blocks.URLBlock(
-                                label="URL del enlace"
+                                label="URL externa"
                             )
                         ),
-                        (
-                            "abrir_nueva_pestana",
-                            blocks.BooleanBlock(
-                                required=False,
-                                default=False,
-                                label="Abrir en nueva pestaña"
-                            )
-                        ),
-                    ],
-                    label="Enlace del menú"
+                    ]
                 )
-            )
+            ),
         ],
         blank=True,
         use_json_field=True,
@@ -122,6 +149,8 @@ class HomePage(Page):
     subpage_types = [
         "home.StandardPage",
         "home.NoticiaPage",
+        "home.SectionPage",
+        "home.NewsIndexPage",
     ]
 
 class StandardPage(Page):
@@ -181,3 +210,90 @@ def get_context(self, request, *args, **kwargs):
     )
 
     return context
+
+
+class SectionPage(Page):
+    """
+    Páginas principales como Conócenos, Servicios y Transparencia.
+    """
+
+    intro = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name="Introducción"
+    )
+
+    body = RichTextField(
+        blank=True,
+        verbose_name="Contenido"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+        FieldPanel("body"),
+    ]
+
+    parent_page_types = [
+        "home.HomePage",
+        "home.SectionPage",
+    ]
+
+    subpage_types = [
+        "home.StandardPage",
+        "home.DocumentPage",
+    ]
+
+
+class NewsIndexPage(Page):
+    """
+    Página que muestra el listado de noticias.
+    """
+
+    intro = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name="Introducción"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+    ]
+
+    parent_page_types = ["home.HomePage"]
+
+    subpage_types = ["home.NoticiaPage"]
+
+
+class DocumentPage(Page):
+    """
+    Página para publicar un documento descargable.
+    """
+
+    descripcion = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name="Descripción"
+    )
+
+    documento = models.ForeignKey(
+        "wagtaildocs.Document",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Archivo descargable"
+    )
+
+    fecha_documento = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name="Fecha del documento"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("descripcion"),
+        FieldPanel("documento"),
+        FieldPanel("fecha_documento"),
+    ]
+
+    parent_page_types = ["home.SectionPage"]
