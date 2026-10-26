@@ -47,6 +47,43 @@ class HomePage(Page):
         use_json_field=True
     )
 
+    menu_lateral = StreamField(
+        [
+            (
+                "enlace",
+                blocks.StructBlock(
+                    [
+                        (
+                            "titulo",
+                            blocks.CharBlock(
+                                max_length=100,
+                                label="Nombre del enlace"
+                            )
+                        ),
+                        (
+                            "url",
+                            blocks.URLBlock(
+                                label="URL del enlace"
+                            )
+                        ),
+                        (
+                            "abrir_nueva_pestana",
+                            blocks.BooleanBlock(
+                                required=False,
+                                default=False,
+                                label="Abrir en nueva pestaña"
+                            )
+                        ),
+                    ],
+                    label="Enlace del menú"
+                )
+            )
+        ],
+        blank=True,
+        use_json_field=True,
+        verbose_name="Menú lateral"
+    )
+
     servicios = StreamField(
         [
             (
@@ -78,6 +115,7 @@ class HomePage(Page):
         FieldPanel("subtitulo"),
         FieldPanel("banners"),
         FieldPanel("servicios"),
+        FieldPanel("menu_lateral"),
     ]
 
     # La portada puede contener páginas informativas.

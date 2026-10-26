@@ -418,3 +418,111 @@ img {
         grid-column: auto;
     }
 }
+
+.hero-principal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 24px;
+    align-items: stretch;
+    padding: 24px 5%;
+    background: #f4f6f4;
+}
+
+.hero-carrusel {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #10452f;
+}
+
+.hero-principal .hero-banner {
+    min-height: 440px;
+}
+
+.menu-lateral {
+    padding: 24px 18px;
+    border: 1px solid #e2e8e3;
+    border-top: 4px solid #c9a64b;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+}
+
+.menu-lateral h2 {
+    margin: 0 0 18px;
+    color: #10452f;
+    font-size: 21px;
+    line-height: 1.3;
+}
+
+.menu-lateral nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-lateral-enlace {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #e5eae6;
+    color: #176b45;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.menu-lateral-enlace:hover,
+.menu-lateral-enlace:focus-visible {
+    color: #10452f;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.menu-lateral-enlace span:last-child {
+    color: #b18b2d;
+    font-size: 18px;
+}
+
+.menu-lateral-vacio {
+    color: #59665e;
+    font-size: 14px;
+}
+
+.hero-sin-banner {
+    min-height: 440px;
+    padding: 40px;
+    color: white;
+}
+
+@media (max-width: 900px) {
+    .hero-principal {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
+
+    .menu-lateral {
+        padding: 22px;
+    }
+
+    .menu-lateral nav {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 24px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-principal {
+        padding: 16px;
+    }
+
+    .hero-principal .hero-banner {
+        min-height: 360px;
+    }
+
+    .menu-lateral nav {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

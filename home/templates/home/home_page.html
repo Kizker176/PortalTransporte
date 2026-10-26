@@ -7,42 +7,63 @@
 
 {% block content %}
 
-<section class="hero">
-    {% for bloque in page.banners %}
-    {% if bloque.block_type == "banner" %}
-    <article class="hero-banner">
-        {% image bloque.value.imagen fill-1600x650 as banner_img %}
+<section class="hero-principal">
+    <div class="hero-carrusel">
+        {% for bloque in page.banners %}
+        {% if bloque.block_type == "banner" %}
+        {% image bloque.value.imagen fill-1400x650 as banner_img %}
 
-        <img class="hero-imagen" src="{{ banner_img.url }}" alt="{{ bloque.value.titulo }}">
+        <article class="hero-banner">
+            <img class="hero-imagen" src="{{ banner_img.url }}" alt="{{ bloque.value.titulo }}">
 
-        <div class="hero-capa"></div>
+            <div class="hero-capa"></div>
 
-        <div class="hero-contenido">
-            <span class="etiqueta">
-                Gobierno de la Gente
-            </span>
+            <div class="hero-contenido">
+                <span class="etiqueta">
+                    Gobierno de la Gente
+                </span>
 
-            <h1>{{ bloque.value.titulo }}</h1>
+                <h1>{{ bloque.value.titulo }}</h1>
 
-            {% if bloque.value.descripcion %}
-            <p>{{ bloque.value.descripcion }}</p>
-            {% endif %}
+                {% if bloque.value.descripcion %}
+                <p>{{ bloque.value.descripcion }}</p>
+                {% endif %}
 
-            {% if bloque.value.enlace_boton %}
-            <a class="boton boton-dorado" href="{{ bloque.value.enlace_boton }}">
-                {{ bloque.value.texto_boton|default:"Conocer más" }}
+                {% if bloque.value.enlace_boton %}
+                <a class="boton boton-dorado" href="{{ bloque.value.enlace_boton }}">
+                    {{ bloque.value.texto_boton|default:"Conocer más" }}
+                </a>
+                {% endif %}
+            </div>
+        </article>
+        {% endif %}
+        {% empty %}
+        <div class="hero-sin-banner">
+            <h1>{{ page.title }}</h1>
+            <p>{{ page.subtitulo }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <aside class="menu-lateral">
+        <h2>Enlaces de interés</h2>
+
+        <nav aria-label="Enlaces de interés">
+            {% for bloque in page.menu_lateral %}
+            {% if bloque.block_type == "enlace" %}
+            <a class="menu-lateral-enlace" href="{{ bloque.value.url }}" {% if bloque.value.abrir_nueva_pestana %}
+                target="_blank" rel="noopener noreferrer" {% endif %}>
+                <span>{{ bloque.value.titulo }}</span>
+                <span aria-hidden="true">↗</span>
             </a>
             {% endif %}
-        </div>
-    </article>
-    {% endif %}
-    {% empty %}
-    <div class="hero-vacio">
-        <span class="etiqueta">Gobierno de la Gente</span>
-        <h1>{{ page.title }}</h1>
-        <p>{{ page.subtitulo }}</p>
-    </div>
-    {% endfor %}
+            {% empty %}
+            <p class="menu-lateral-vacio">
+                Próximamente encontrarás aquí enlaces de interés.
+            </p>
+            {% endfor %}
+        </nav>
+    </aside>
 </section>
 
 <section class="seccion servicios" id="servicios">
