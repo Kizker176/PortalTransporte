@@ -1,0 +1,80 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}Secretaría de Gobierno{% endblock %}</title>
+
+    <meta name="description"
+          content="Portal institucional de servicios e información ciudadana.">
+
+    <link rel="stylesheet"
+          href="{% static 'css/welcome_page.css' %}">
+</head>
+
+<body>
+    <a class="skip-link" href="#contenido">
+        Saltar al contenido principal
+    </a>
+
+    <div class="barra-superior">
+        Gobierno del Estado de Guanajuato
+    </div>
+
+    <header class="encabezado">
+        <a class="marca" href="/">
+            <span class="marca-simbolo" aria-hidden="true">G</span>
+            <span>
+                <strong>Guanajuato</strong>
+                <small>Secretaría de Gobierno</small>
+            </span>
+        </a>
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-controls="menuPrincipal"
+            aria-expanded="false">
+            Menú ☰
+        </button>
+
+        <nav class="menu" id="menuPrincipal"
+             aria-label="Navegación principal">
+            <a href="/">Inicio</a>
+            <a href="/conocenos/">Conócenos</a>
+            <a href="/servicios/">Servicios</a>
+            <a href="/noticias/">Noticias</a>
+            <a href="/transparencia/">Transparencia</a>
+        </nav>
+    </header>
+
+    <main id="contenido">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="pie">
+        <div>
+            <h2>Secretaría de Gobierno</h2>
+            <p>Información y servicios para la ciudadanía.</p>
+        </div>
+
+        <div>
+            <h3>Contacto</h3>
+            <p>Gobierno del Estado de Guanajuato</p>
+            <a href="https://guanajuato.gob.mx/">
+                Portal oficial del Gobierno
+            </a>
+        </div>
+
+        <div class="pie-final">
+            Sitio institucional · Gobierno de Guanajuato
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

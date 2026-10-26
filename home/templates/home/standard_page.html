@@ -1,0 +1,24 @@
+
+{% extends "home/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}
+    {{ page.title }} | Secretaría de Gobierno
+{% endblock %}
+
+{% block content %}
+<section class="seccion">
+    <div class="contenedor">
+        <span class="sobrelinea">Secretaría de Gobierno</span>
+        <h1>{{ page.title }}</h1>
+
+        {% if page.intro %}
+            <p>{{ page.intro }}</p>
+        {% endif %}
+
+        <div class="contenido-pagina">
+            {{ page.body|richtext }}
+        </div>
+    </div>
+</section>
+{% endblock %}

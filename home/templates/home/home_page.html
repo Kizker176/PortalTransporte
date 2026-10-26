@@ -1,0 +1,139 @@
+{% extends "home/base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block title %}
+{{ page.title }} | Secretaría de Gobierno
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    {% for bloque in page.banners %}
+    {% if bloque.block_type == "banner" %}
+    <article class="hero-banner">
+        {% image bloque.value.imagen fill-1600x650 as banner_img %}
+
+        <img class="hero-imagen" src="{{ banner_img.url }}" alt="{{ bloque.value.titulo }}">
+
+        <div class="hero-capa"></div>
+
+        <div class="hero-contenido">
+            <span class="etiqueta">
+                Gobierno de la Gente
+            </span>
+
+            <h1>{{ bloque.value.titulo }}</h1>
+
+            {% if bloque.value.descripcion %}
+            <p>{{ bloque.value.descripcion }}</p>
+            {% endif %}
+
+            {% if bloque.value.enlace_boton %}
+            <a class="boton boton-dorado" href="{{ bloque.value.enlace_boton }}">
+                {{ bloque.value.texto_boton|default:"Conocer más" }}
+            </a>
+            {% endif %}
+        </div>
+    </article>
+    {% endif %}
+    {% empty %}
+    <div class="hero-vacio">
+        <span class="etiqueta">Gobierno de la Gente</span>
+        <h1>{{ page.title }}</h1>
+        <p>{{ page.subtitulo }}</p>
+    </div>
+    {% endfor %}
+</section>
+
+<section class="seccion servicios" id="servicios">
+    <div class="contenedor">
+        <div class="encabezado-seccion">
+            <span class="sobrelinea">Atención ciudadana</span>
+            <h2>Servicios y áreas de atención</h2>
+            <p>
+                Consulta los servicios y la información
+                de las distintas áreas de la Secretaría.
+            </p>
+        </div>
+
+        <div class="rejilla-servicios">
+            {% for bloque in page.servicios %}
+            {% if bloque.block_type == "servicio" %}
+            <article class="tarjeta-servicio">
+                {% if bloque.value.imagen %}
+                {% image bloque.value.imagen fill-600x350 as servicio_img %}
+                <img src="{{ servicio_img.url }}" alt="{{ bloque.value.nombre }}" loading="lazy">
+                {% endif %}
+
+                <div class="tarjeta-contenido">
+                    <h3>{{ bloque.value.nombre }}</h3>
+
+                    <p>{{ bloque.value.descripcion }}</p>
+
+                    {% if bloque.value.enlace %}
+                    <a href="{{ bloque.value.enlace }}" class="enlace-mas">
+                        Consultar servicio →
+                    </a>
+                    {% endif %}
+                </div>
+            </article>
+            {% endif %}
+            {% empty %}
+            <p>
+                Próximamente encontrarás aquí los servicios
+                disponibles para la ciudadanía.
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="seccion noticias" id="noticias">
+    <div class="contenedor">
+        <div class="encabezado-seccion">
+            <span class="sobrelinea">Información oficial</span>
+            <h2>Últimas noticias</h2>
+        </div>
+
+        <div class="rejilla-noticias">
+            {% for noticia in noticias %}
+            <article class="tarjeta-noticia">
+                {% if noticia.imagen %}
+                {% image noticia.imagen fill-600x350 as noticia_img %}
+                <img src="{{ noticia_img.url }}" alt="{{ noticia.title }}" loading="lazy">
+                {% endif %}
+
+                <div class="tarjeta-contenido">
+                    {% if noticia.fecha_publicacion %}
+                    <time datetime="{{ noticia.fecha_publicacion|date:'Y-m-d' }}">
+                        {{ noticia.fecha_publicacion|date:"d/m/Y" }}
+                    </time>
+                    {% endif %}
+
+                    <h3>
+                        <a href="{% pageurl noticia %}">
+                            {{ noticia.title }}
+                        </a>
+                    </h3>
+
+                    <p>{{ noticia.resumen }}</p>
+
+                    <a href="{% pageurl noticia %}" class="enlace-mas">
+                        Leer noticia →
+                    </a>
+                </div>
+            </article>
+            {% empty %}
+            <p>Próximamente publicaremos nuevas noticias.</p>
+            {% endfor %}
+        </div>
+
+        <div class="centrado">
+            <a href="/noticias/" class="boton boton-verde">
+                Ver todas las noticias
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
