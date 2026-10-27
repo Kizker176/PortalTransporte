@@ -1,0 +1,16 @@
+{% load wagtailcore_tags %}
+
+<li class="menu-item">
+    <a href="{% pageurl item %}">{{ item.title }}</a>
+
+    {% with children=item.get_children.live.in_menu %}
+        {% if children %}
+            <ul class="submenu">
+                <li><a href="/">Inicio</a></li>
+                {% for child in children %}
+                    {% include "home/includes/menu_item.html" with item=child %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</li>

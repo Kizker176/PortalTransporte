@@ -721,3 +721,201 @@ img {
         transition: none;
     }
 }
+
+
+.site-header {
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.site-header__inner {
+    width: min(1200px, 94%);
+    margin: 0 auto;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.site-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #17354b;
+    text-decoration: none;
+    min-width: 0;
+}
+
+.site-brand__image {
+    display: block;
+    width: auto;
+    max-width: 280px;
+    max-height: 76px;
+    object-fit: contain;
+}
+
+.site-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.site-brand__text strong {
+    font-size: 1.1rem;
+}
+
+.site-brand__text small {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+.site-brand__mobile {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .site-header__inner {
+        min-height: 76px;
+        gap: 12px;
+    }
+
+    .site-brand {
+        gap: 10px;
+    }
+
+    .site-brand__image {
+        max-width: 150px;
+        max-height: 55px;
+    }
+
+    .site-brand__text strong {
+        font-size: 0.9rem;
+    }
+
+    .site-brand__text small {
+        font-size: 0.75rem;
+    }
+
+    .site-brand__desktop {
+        display: none;
+    }
+
+    .site-brand__mobile {
+        display: inline-block;
+    }
+}
+
+
+.menu-principal,
+.submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-principal {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-item a {
+    display: block;
+    padding: 12px 8px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background: white;
+    box-shadow: 0 4px 12px #0002;
+    z-index: 1000;
+}
+
+.menu-item:hover > .submenu,
+.menu-item:focus-within > .submenu {
+    display: block;
+}
+
+.submenu .menu-item a {
+    padding: 10px 16px;
+}
+
+
+/* Menú principal horizontal */
+.menu-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 25px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Elementos del menú */
+.menu-list li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Enlaces */
+.menu-list a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    padding: 10px 0;
+    transition: color 0.3s ease;
+}
+
+/* Efecto al pasar el cursor */
+.menu-list a:hover {
+    color: #007bff;
+}
+
+/* Evitar viñetas también en submenús */
+.submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-list > li {
+    position: relative;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.menu-list > li:hover > .submenu {
+    display: block;
+}
+
+.submenu li a {
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.submenu li a:hover {
+    background: #f2f2f2;
+}

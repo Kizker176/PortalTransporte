@@ -10,6 +10,12 @@ from wagtail.fields import RichTextField
 from wagtail.documents import get_document_model_string
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.blocks import PageChooserBlock
+from wagtail.contrib.settings.models import (
+    BaseSiteSetting,
+    register_setting,
+)
+from wagtail.images import get_image_model
+from wagtail.models import Site
 
 class BannerBlock(blocks.StructBlock):
         imagen = ImageChooserBlock(
@@ -35,8 +41,66 @@ class BannerBlock(blocks.StructBlock):
         )
 
 class Meta:
-    label = "Banner"
-    icon = "image"
+        label = "Banner"
+        icon = "image"
+
+@register_setting
+class ConfiguracionSitio(BaseSiteSetting):
+    """ nombre_institucion = models.CharField(
+        max_length=200,
+        default="Secretaría de Gobierno",
+        verbose_name="Nombre de la institución",
+    ) """
+
+    texto_encabezado = models.CharField(
+        max_length=250,
+        blank=True,
+        verbose_name="Texto del encabezado",
+    )
+
+    logo = models.ForeignKey(
+        get_image_model(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Logo principal",
+    )
+
+    logo_movil = models.ForeignKey(
+        get_image_model(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Logo para móviles",
+    )
+
+    escudo = models.ForeignKey(
+        get_image_model(),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Escudo institucional",
+    )
+
+    texto_pie = models.TextField(
+        blank=True,
+        verbose_name="Texto del pie de página",
+    )
+
+    panels = [
+        FieldPanel("texto_encabezado"),
+        FieldPanel("logo"),
+        FieldPanel("logo_movil"),
+        FieldPanel("escudo"),
+        FieldPanel("texto_pie"),
+    ]
+
+    class Meta:
+        verbose_name = "Configuración del sitio"
+        verbose_name_plural = "Configuración del sitio"
 
 class HomePage(Page):
     subtitulo = models.CharField(
@@ -153,6 +217,34 @@ class HomePage(Page):
         "home.NewsIndexPage",
     ]
 
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+
+        context["noticias"] = (
+            NoticiaPage.objects
+            .child_of(self)
+            .live()
+            .order_by("-fecha_publicacion", "-first_published_at")[:4]
+        )
+
+        return context
+    
+    def menu_principal(request):
+        site = Site.find_for_request(request)
+
+        if site is None:
+            return {"menu_items": []}
+
+        menu_items = (
+            site.root_page
+            .get_children()
+            .live()
+            .in_menu()
+        )
+
+        return {"menu_items": menu_items}
+
+
 class StandardPage(Page):
     intro = models.CharField(
         max_length=300,
@@ -198,18 +290,6 @@ class NoticiaPage(Page):
     ]
 
     parent_page_types = ["home.HomePage"]
-
-def get_context(self, request, *args, **kwargs):
-    context = super().get_context(request, *args, **kwargs)
-
-    context["noticias"] = (
-        NoticiaPage.objects
-        .child_of(self)
-        .live()
-        .order_by("-fecha_publicacion", "-first_published_at")[:4]
-    )
-
-    return context
 
 
 class SectionPage(Page):

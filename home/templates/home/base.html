@@ -1,18 +1,19 @@
-
 {% load static %}
+{% load wagtailimages_tags wagtailsettings_tags %}
+{% get_settings use_default_site=True %}
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}Secretaría de Gobierno{% endblock %}</title>
 
-    <meta name="description"
-          content="Portal institucional de servicios e información ciudadana.">
+    <meta name="description" content="Portal institucional de servicios e información ciudadana.">
 
-    <link rel="stylesheet"
-          href="{% static 'css/welcome_page.css' %}">
+    <link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
 </head>
 
 <body>
@@ -20,33 +21,61 @@
         Saltar al contenido principal
     </a>
 
-    <header class="encabezado">
-        <a class="marca" href="/">
-            <span class="marca-simbolo" aria-hidden="true">G</span>
-            <span>
-                <strong>Guanajuato</strong>
-                <small>Secretaría de Gobierno</small>
-            </span>
-        </a>
+    {% with configuracion=settings.home.ConfiguracionSitio %}
+    <header class="site-header">
+        <div class="site-header__inner">
 
-        <button
-            class="menu-toggle"
-            id="menuToggle"
-            type="button"
-            aria-controls="menuPrincipal"
-            aria-expanded="false">
-            Menú ☰
-        </button>
+            <a href="/" class="site-brand" aria-label="{{ configuracion.nombre_institucion }} - Inicio">
 
-        <nav class="menu" id="menuPrincipal"
-             aria-label="Navegación principal">
-            <a href="/">Inicio</a>
-            <a href="/conocenos/">Conócenos</a>
-            <a href="/servicios/">Servicios</a>
-            <a href="/noticias/">Noticias</a>
-            <a href="/transparencia/">Transparencia</a>
-        </nav>
+                {% if configuracion.logo %}
+                {% image configuracion.logo width-280 as logo_principal %}
+
+                <span class="site-brand__desktop">
+                    <img src="{{ logo_principal.url }}" alt="" class="site-brand__image">
+                </span>
+                {% endif %}
+
+                {% if configuracion.logo_movil %}
+                {% image configuracion.logo_movil width-180 as logo_movil %}
+
+                <span class="site-brand__mobile">
+                    <img src="{{ logo_movil.url }}" alt="" class="site-brand__image">
+                </span>
+                {% elif configuracion.logo %}
+                <span class="site-brand__mobile">
+                    {% image configuracion.logo width-180 as logo_movil_respaldo %}
+                    <img src="{{ logo_movil_respaldo.url }}" alt="" class="site-brand__image">
+                </span>
+                {% endif %}
+
+                <span class="site-brand__text">
+                    <strong>{{ configuracion.nombre_institucion }}</strong>
+
+                    {% if configuracion.texto_encabezado %}
+                    <small>{{ configuracion.texto_encabezado }}</small>
+                    {% endif %}
+                </span>
+            </a>
+
+            <button class="menu-toggle" id="menuToggle" type="button" aria-controls="menuPrincipal"
+                aria-expanded="false">
+                Menú ☰
+            </button>
+
+            <nav class="menu" id="menuPrincipal" aria-label="Navegación principal">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="/">Inicio</a>
+                    </li>
+                    {% for item in menu_items %}
+                    {% include "home/includes/menu_item.html" with item=item %}
+                    {% endfor %}
+                </ul>
+            </nav>
+
+        </div>
     </header>
+    {% endwith %}
 
     <main id="contenido">
         {% block content %}{% endblock %}
@@ -73,4 +102,5 @@
 
     <script src="{% static 'js/main.js' %}"></script>
 </body>
+
 </html>
