@@ -1,0 +1,64 @@
+{% extends "home/base.html" %}
+
+{% block title %}{{ page.title }} | Secretaría de Gobierno{% endblock %}
+
+{% block content %}
+<section class="contacto-seccion">
+    <div class="contacto-contenedor">
+        <div class="contacto-encabezado">
+            <span class="contacto-etiqueta">Atención ciudadana</span>
+            <h1>{{ page.title }}</h1>
+            {% if page.intro %}<p>{{ page.intro }}</p>{% endif %}
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="contacto-alerta contacto-alerta--{{ message.tags }}" role="status">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form class="contacto-formulario" method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="contacto-error">{{ form.non_field_errors }}</div>{% endif %}
+
+            <div class="contacto-campos">
+                <div class="contacto-campo">
+                    <label for="{{ form.nombre_completo.id_for_label }}">{{ form.nombre_completo.label }} <span aria-hidden="true">*</span></label>
+                    {{ form.nombre_completo }}
+                    {% for error in form.nombre_completo.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="contacto-campo">
+                    <label for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }} <span aria-hidden="true">*</span></label>
+                    {{ form.telefono }}
+                    {% for error in form.telefono.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="contacto-campo">
+                    <label for="{{ form.municipio.id_for_label }}">{{ form.municipio.label }} <span aria-hidden="true">*</span></label>
+                    {{ form.municipio }}
+                    {% for error in form.municipio.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="contacto-campo">
+                    <label for="{{ form.correo.id_for_label }}">{{ form.correo.label }} <span aria-hidden="true">*</span></label>
+                    {{ form.correo }}
+                    {% for error in form.correo.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="contacto-campo contacto-campo--completo">
+                    <label for="{{ form.mensaje.id_for_label }}">{{ form.mensaje.label }} <span aria-hidden="true">*</span></label>
+                    {{ form.mensaje }}
+                    {% for error in form.mensaje.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="contacto-privacidad">
+                {{ form.consentimiento }}
+                <label for="{{ form.consentimiento.id_for_label }}">{{ form.consentimiento.label }}</label>
+                <p><a href="{{ page.aviso_privacidad_url }}" target="_blank" rel="noopener noreferrer">Consultar Aviso de Privacidad</a></p>
+                {% for error in form.consentimiento.errors %}<p class="contacto-error">{{ error }}</p>{% endfor %}
+            </div>
+
+            <p class="contacto-obligatorios">Los campos marcados con * son obligatorios.</p>
+            <button class="contacto-boton" type="submit">Enviar mensaje</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

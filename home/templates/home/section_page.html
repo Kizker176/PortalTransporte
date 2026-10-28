@@ -22,6 +22,33 @@
         </div>
         {% endif %}
 
+        {% if page.mostrar_embebido and page.url_embebida %}
+        <section class="tramites-embebidos">
+            <div class="contenedor">
+
+                {% if page.titulo_embebido %}
+                <h2>{{ page.titulo_embebido }}</h2>
+                {% endif %}
+
+                <div class="iframe-contenedor" style="height:800px;" >
+
+                    <iframe src="{{ page.url_embebida }}" title="{{ page.titulo_embebido|default:page.title }}"
+                        loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+                    </iframe>
+
+                </div>
+
+                <p class="enlace-alterno">
+                    ¿No se muestra el contenido?
+                    <a href="{{ page.url_embebida }}" target="_blank" rel="noopener noreferrer">
+                        Abrir en otra pestaña
+                    </a>
+                </p>
+
+            </div>
+        </section>
+        {% endif %}
+
         <div class="rejilla-servicios">
             {% for child in page.get_children.live %}
             <article class="tarjeta-servicio">
@@ -34,7 +61,7 @@
                 </div>
             </article>
             {% empty %}
-            <p>Próximamente publicaremos más información.</p>
+            {# <p>Próximamente publicaremos más información.</p> #}
             {% endfor %}
         </div>
     </div>

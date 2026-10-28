@@ -1,0 +1,56 @@
+{% extends "home/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block title %}{{ page.title }} | Secretaría de Gobierno{% endblock %}
+
+{% block content %}
+<section class="seccion centros-seccion">
+    <div class="contenedor">
+        <header class="encabezado-seccion">
+            <span class="sobrelinea">PortalTransporte</span>
+            <h1>{{ page.title }}</h1>
+            {% if page.intro %}
+            <p>{{ page.intro }}</p>
+            {% else %}
+            <p>Consulta la dirección y los datos de contacto de nuestros centros.</p>
+            {% endif %}
+        </header>
+        {% if page.body %}
+        <div class="contenido-pagina">
+            {{ page.body|richtext }}
+        </div>
+        {% endif %}
+
+        <div class="centros-resumen" aria-live="polite">
+            {% if centros %}
+            <p>{{ centros|length }} centro{{ centros|length|pluralize }} registrado{{ centros|length|pluralize }}</p>
+            {% endif %}
+        </div>
+
+        <div class="rejilla-centros">
+            {% for centro in centros %}
+            <article class="tarjeta-centro">
+                <div class="tarjeta-centro__icono" aria-hidden="true">⌖</div>
+                <div class="tarjeta-centro__contenido">
+                    <p class="tarjeta-centro__municipio">{{ centro.municipio }}</p>
+                    <h2>{{ centro.nombre }}</h2>
+                    <div class="dato-centro">
+                        <span class="dato-centro__etiqueta">Dirección</span>
+                        <p>{{ centro.domicilio }}</p>
+                    </div>
+                    <div class="dato-centro">
+                        <span class="dato-centro__etiqueta">Teléfono</span>
+                        <p><a href="tel:{{ centro.telefono }}">{{ centro.telefono }}</a></p>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="centros-vacio">
+                <h2>Próximamente</h2>
+                <p>Aún no hay centros registrados para mostrar.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
