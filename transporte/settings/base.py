@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "base",
 ]
 
 WAGTAIL_EMBED_FINDERS = [
@@ -86,6 +87,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "home.context_processors.menu_principal",
+                "wagtail.contrib.settings.context_processors.settings",
             ],
         },
     },
