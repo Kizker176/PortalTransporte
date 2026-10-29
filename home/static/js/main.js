@@ -102,3 +102,129 @@ document.addEventListener("DOMContentLoaded", () => {
         startAutoplay();
     });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const contenedor = document.querySelector("[data-modal-campanas]");
+
+    if (!contenedor) return;
+
+    const avisos = Array.from(
+        contenedor.querySelectorAll("[data-campana-id]")
+    );
+
+    const botonCerrar = contenedor.querySelector("[data-cerrar-campanas]");
+    const botonAnterior = contenedor.querySelector("[data-campana-anterior]");
+    const botonSiguiente = contenedor.querySelector("[data-campana-siguiente]");
+    const contador = contenedor.querySelector("[data-campana-contador]");
+
+    const CLAVE = "portaltransporte_campanas_vistas";
+    const INTERVALO = 6000;
+
+    function obtenerVistas() {
+        try {
+            return JSON.parse(localStorage.getItem(CLAVE) || "[]");
+        } catch {
+            return [];
+        }
+    }
+
+    function registrarVista(id) {
+        try {
+            const vistas = obtenerVistas();
+
+            if (!vistas.includes(id)) {
+                vistas.push(id);
+                localStorage.setItem(CLAVE, JSON.stringify(vistas));
+            }
+        } catch {
+            // El navegador puede bloquear el almacenamiento local.
+        }
+    }
+
+    const vistas = obtenerVistas();
+
+    // Solo se muestran las campañas que el visitante aún no ha visto.
+    /* const pendientes = avisos.filter(
+        aviso => !vistas.includes(aviso.dataset.campanaId)
+    ); */
+    const pendientes = avisos;
+    
+    if (pendientes.length === 0) return;
+
+    let actual = 0;
+    let temporizador = null;
+
+    function mostrarAviso(indice) {
+        actual = (indice + pendientes.length) % pendientes.length;
+
+        pendientes.forEach((aviso, i) => {
+            aviso.hidden = i !== actual;
+        });
+
+        const id = pendientes[actual].dataset.campanaId;
+        /* registrarVista(id); */
+
+        if (contador) {
+            contador.textContent =
+                `${actual + 1} de ${pendientes.length}`;
+        }
+
+        const hayVarios = pendientes.length > 1;
+
+        if (botonAnterior) botonAnterior.hidden = !hayVarios;
+        if (botonSiguiente) botonSiguiente.hidden = !hayVarios;
+        if (contador) contador.hidden = !hayVarios;
+    }
+
+    function detenerRotacion() {
+        if (temporizador) {
+            clearInterval(temporizador);
+            temporizador = null;
+        }
+    }
+
+    function iniciarRotacion() {
+        detenerRotacion();
+
+        if (pendientes.length > 1) {
+            temporizador = setInterval(() => {
+                mostrarAviso(actual + 1);
+            }, INTERVALO);
+        }
+    }
+
+    function cerrarModal() {
+        detenerRotacion();
+        contenedor.hidden = true;
+    }
+
+    botonCerrar?.addEventListener("click", cerrarModal);
+
+    botonSiguiente?.addEventListener("click", () => {
+        mostrarAviso(actual + 1);
+        iniciarRotacion();
+    });
+
+    botonAnterior?.addEventListener("click", () => {
+        mostrarAviso(actual - 1);
+        iniciarRotacion();
+    });
+
+    contenedor.addEventListener("click", event => {
+        if (event.target === contenedor) {
+            cerrarModal();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (contenedor.hidden) return;
+
+        if (event.key === "Escape") {
+            cerrarModal();
+        }
+    });
+
+    mostrarAviso(0);
+    contenedor.hidden = false;
+    iniciarRotacion();
+});

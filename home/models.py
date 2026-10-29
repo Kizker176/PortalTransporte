@@ -17,6 +17,11 @@ from wagtail.contrib.settings.models import (
 from wagtail.images import get_image_model
 from wagtail.models import Site
 from wagtail.snippets.models import register_snippet
+from django.utils import timezone
+from modelcluster.fields import ParentalKey
+from wagtail.models import Orderable
+from wagtail.admin.panels import InlinePanel
+
 
 class BannerBlock(blocks.StructBlock):
         imagen = ImageChooserBlock(
@@ -208,6 +213,11 @@ class HomePage(Page):
         FieldPanel("banners"),
         FieldPanel("servicios"),
         FieldPanel("menu_lateral"),
+        InlinePanel(
+            "modales",
+            label="Campañas y avisos emergentes",
+            max_num=10,
+        ),
     ]
 
     # La portada puede contener páginas informativas.
@@ -230,6 +240,15 @@ class HomePage(Page):
             .order_by("-fecha_publicacion", "-first_published_at")[:4]
         )
 
+        ahora = timezone.now()
+
+        context["modales_activos"] = (
+            self.modales.filter(activo=True)
+            .select_related("imagen")
+            .order_by("sort_order")
+        )
+
+
         return context
     
     def menu_principal(request):
@@ -247,6 +266,82 @@ class HomePage(Page):
 
         return {"menu_items": menu_items}
 
+
+
+class HomePageModal(Orderable):
+    """Campañas y avisos emergentes del Home."""
+
+    page = ParentalKey(
+        "home.HomePage",
+        on_delete=models.CASCADE,
+        related_name="modales",
+    )
+
+    titulo = models.CharField(
+        max_length=150,
+        blank=True,
+        verbose_name="Título del aviso",
+    )
+
+    imagen = models.ForeignKey(
+        get_image_model(),
+        null=True,
+        blank=False,
+        on_delete=models.PROTECT,
+        related_name="+",
+        verbose_name="Imagen del modal",
+    )
+
+    """ imagen = models.ForeignKey(
+        get_image_model(),
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        verbose_name="Imagen del modal",
+    ) """
+
+    texto_alternativo = models.CharField(
+        max_length=250,
+        blank=True,
+        verbose_name="Texto alternativo",
+    )
+
+    enlace = models.URLField(
+        max_length=500,
+        blank=True,
+        verbose_name="Enlace de la campaña",
+    )
+
+    activo = models.BooleanField(
+        default=True,
+        verbose_name="Campaña activa",
+    )
+
+    panels = [
+        FieldPanel("titulo"),
+        FieldPanel("imagen"),
+        FieldPanel("texto_alternativo"),
+        FieldPanel("enlace"),
+        FieldPanel("activo"),
+    ]
+
+    """ def clean(self):
+        super().clean()
+
+        if (
+            self.fecha_inicio
+            and self.fecha_fin
+            and self.fecha_fin <= self.fecha_inicio
+        ):
+            from django.core.exceptions import ValidationError
+
+            raise ValidationError({
+                "fecha_fin": (
+                    "La fecha de finalización debe ser posterior "
+                    "a la fecha de inicio."
+                )
+            }) """
 
 class StandardPage(Page):
     intro = models.CharField(

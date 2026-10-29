@@ -142,4 +142,47 @@
     </div>
 </section>
 
+{% if modales_activos %}
+<div class="modal-campanas" data-modal-campanas hidden>
+    <div class="modal-campanas__contenido" role="dialog" aria-modal="true" aria-label="Avisos institucionales"
+        aria-live="polite">
+        <button type="button" class="modal-campanas__cerrar" data-cerrar-campanas aria-label="Cerrar avisos">
+            &times;
+        </button>
+
+        <div class="modal-campanas__lista">
+            {% for modal in modales_activos %}
+            <article class="modal-campanas__aviso" data-campana-id="{{ modal.pk }}" {% if not forloop.first %}hidden{% endif %}>
+                {% if modal.titulo %}
+                <h2>{{ modal.titulo }}</h2>
+                {% endif %}
+
+                {% image modal.imagen width-1200 as imagen_modal %}
+
+                {% if modal.enlace %}
+                <a href="{{ modal.enlace }}">
+                    <img src="{{ imagen_modal.url }}" alt="{{ modal.texto_alternativo|default:modal.titulo }}">
+                </a>
+                {% else %}
+                <img src="{{ imagen_modal.url }}" alt="{{ modal.texto_alternativo|default:modal.titulo }}">
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="modal-campanas__controles">
+            <button type="button" data-campana-anterior>
+                Anterior
+            </button>
+
+            <span data-campana-contador></span>
+
+            <button type="button" data-campana-siguiente>
+                Siguiente
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
