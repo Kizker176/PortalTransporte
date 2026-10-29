@@ -7,7 +7,7 @@ from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.fields import RichTextField
-from wagtail.documents import get_document_model_string
+from wagtail.documents import get_document_model
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.blocks import PageChooserBlock
 from wagtail.contrib.settings.models import (
@@ -16,6 +16,7 @@ from wagtail.contrib.settings.models import (
 )
 from wagtail.images import get_image_model
 from wagtail.models import Site
+from wagtail.snippets.models import register_snippet
 
 class BannerBlock(blocks.StructBlock):
         imagen = ImageChooserBlock(
@@ -215,6 +216,8 @@ class HomePage(Page):
         "home.NoticiaPage",
         "home.SectionPage",
         "home.NewsIndexPage",
+        "home.ContactPage",
+        "home.CentrosPage",
     ]
 
     def get_context(self, request, *args, **kwargs):
@@ -308,9 +311,34 @@ class SectionPage(Page):
         verbose_name="Contenido"
     )
 
+    mostrar_embebido = models.BooleanField(
+        default=False,
+        verbose_name="Mostrar contenido embebido"
+    )
+
+    titulo_embebido = models.CharField(
+        max_length=150,
+        blank=True,
+        verbose_name="Título del contenido embebido"
+    )
+
+    url_embebida = models.URLField(
+        max_length=500,
+        blank=True,
+        verbose_name="URL del contenido embebido"
+    )
+
+    altura_embebido = models.PositiveIntegerField(
+        default=800,
+        verbose_name="Altura del contenido embebido (px)"
+    )
+
     content_panels = Page.content_panels + [
         FieldPanel("intro"),
         FieldPanel("body"),
+        FieldPanel("mostrar_embebido"),
+        FieldPanel("titulo_embebido"),
+        FieldPanel("url_embebida"),
     ]
 
     parent_page_types = [
@@ -319,7 +347,9 @@ class SectionPage(Page):
     ]
 
     subpage_types = [
+        "home.HomePage",
         "home.StandardPage",
+        "home.SectionPage",
         "home.DocumentPage",
     ]
 
@@ -355,8 +385,13 @@ class DocumentPage(Page):
         verbose_name="Descripción"
     )
 
+    body = RichTextField(
+        blank=True,
+        verbose_name="Contenido"
+    )
+
     documento = models.ForeignKey(
-        "wagtaildocs.Document",
+        get_document_model(),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -372,8 +407,175 @@ class DocumentPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("descripcion"),
+        FieldPanel("body"),
         FieldPanel("documento"),
         FieldPanel("fecha_documento"),
     ]
 
     parent_page_types = ["home.SectionPage"]
+
+class ContactPage(Page):
+    """Página pública de contacto; envía los mensajes por correo electrónico."""
+
+    intro = models.CharField(
+        max_length=300,
+        blank=True,
+        default="Completa el formulario y nos pondremos en contacto contigo.",
+        verbose_name="Texto introductorio",
+    )
+
+    aviso_privacidad_url = models.URLField(
+        verbose_name="Enlace al aviso de privacidad",
+        help_text="Introduce la URL pública del aviso de privacidad institucional.",
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+        FieldPanel("aviso_privacidad_url"),
+    ]
+
+    parent_page_types = ["home.HomePage"]
+    subpage_types = []
+
+    template = "home/contact_page.html"
+
+    def serve(self, request, *args, **kwargs):
+        from django.conf import settings
+        from django.contrib import messages
+        from django.core.mail import EmailMessage
+        from django.shortcuts import redirect, render
+        from .forms import ContactoForm
+
+        if request.method != "POST":
+            return super().serve(request, *args, **kwargs)
+
+        form = ContactoForm(request.POST)
+        if form.is_valid():
+            if not getattr(settings, "CONTACTO_DESTINO_EMAIL", "transporte_guanajuato@guanajuato.gob.mx"):
+                messages.error(
+                    request,
+                    "El servicio de contacto no está configurado en este momento. "
+                    "Por favor, inténtalo más tarde.",
+                )
+            else:
+                datos = form.cleaned_data
+                asunto = f"Nuevo mensaje de contacto del portal: {datos['nombre_completo']}"
+                cuerpo = (
+                    "Se recibió un nuevo mensaje desde el formulario Contáctanos.\n\n"
+                    f"Nombre completo: {datos['nombre_completo']}\n"
+                    f"Teléfono: {datos['telefono']}\n"
+                    f"Municipio: {datos['municipio']}\n"
+                    f"Correo electrónico: {datos['correo']}\n\n"
+                    "Descripción del mensaje:\n"
+                    f"{datos['mensaje']}\n\n"
+                    "La persona marcó la casilla de lectura del aviso de privacidad."
+                )
+                try:
+                    email = EmailMessage(
+                        subject=asunto,
+                        body=cuerpo,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[settings.CONTACTO_DESTINO_EMAIL],
+                        reply_to=[datos["correo"]],
+                    )
+                    email.send(fail_silently=False)
+                except Exception:
+                    import logging
+                    logging.getLogger(__name__).exception(
+                        "No se pudo enviar el formulario de contacto."
+                    )
+                    messages.error(
+                        request,
+                        "No fue posible enviar tu mensaje. Inténtalo más tarde.",
+                    )
+                else:
+                    messages.success(
+                        request,
+                        "Tu mensaje fue enviado correctamente. Gracias por contactarnos.",
+                    )
+                    return redirect(self.url)
+
+        context = self.get_context(request, *args, **kwargs)
+        context["form"] = form
+        return render(request, self.get_template(request), context)
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        from .forms import ContactoForm
+        context.setdefault("form", ContactoForm())
+        return context
+
+@register_snippet
+class Centro(models.Model):
+    """Catálogo de centros de atención del PortalTransporte."""
+
+    municipio = models.CharField(
+            max_length=100,
+            verbose_name="Municipio",
+    )
+
+    clave_revista = models.CharField(
+                max_length=100,
+                verbose_name="Clave",
+    )
+    
+    nombre = models.CharField(
+        max_length=350,
+        verbose_name="Nombre del centro",
+    )
+
+    domicilio = models.CharField(
+        max_length=350,
+        verbose_name="Domicilio",
+    )
+
+    telefono = models.CharField(
+        max_length=20,
+        verbose_name="Teléfono",
+    )
+
+    panels = [
+        FieldPanel("municipio"),
+        FieldPanel("clave_revista"),
+        FieldPanel("nombre"),
+        FieldPanel("domicilio"),
+        FieldPanel("telefono"),
+    ]
+
+    class Meta:
+        verbose_name = "Centro"
+        verbose_name_plural = "Centros"
+        ordering = ["municipio", "nombre"]
+
+    def __str__(self):
+        return self.nombre
+
+class CentrosPage(Page):
+    """Página pública que lista los centros registrados en el catálogo."""
+
+    intro = models.CharField(
+        max_length=300,
+        blank=True,
+        verbose_name="Introducción",
+    )
+
+    body = RichTextField(
+        blank=True,
+        verbose_name="Contenido"
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro"),
+        FieldPanel("body"),
+    ]
+
+    parent_page_types = ["home.HomePage", "home.CentrosPage"]
+    subpage_types = [
+        "home.StandardPage",
+        "home.DocumentPage",
+    ]
+
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        context["centros"] = Centro.objects.all().order_by("municipio", "nombre")
+        return context

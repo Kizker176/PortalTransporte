@@ -1,5 +1,5 @@
 {% extends "home/base.html" %}
-{% load wagtaildocs_tags %}
+{% load wagtailcore_tags %}
 
 {% block title %}
 {{ page.title }} | Transparencia
@@ -15,23 +15,20 @@
         <p>{{ page.descripcion }}</p>
         {% endif %}
 
-        {% if page.documento %}
-        <div class="tarjeta-servicio tarjeta-contenido">
-            <h2>Documento disponible</h2>
-
-            {% if page.fecha_documento %}
-            <p>
-                Fecha:
-                {{ page.fecha_documento|date:"d/m/Y" }}
-            </p>
-            {% endif %}
-
-            <a class="boton boton-verde" href="{% url 'wagtaildocs_serve' page.documento.id %}">
-                Descargar documento
-            </a>
+        {% if page.body %}
+        <div class="contenido-pagina">
+            {{ page.body|richtext }}
         </div>
-        {% else %}
-        <p>El documento aún no está disponible.</p>
+        {% endif %}
+
+        {% if page.documento %}
+        <a href="{{ page.documento.url }}" target="_blank" rel="noopener">
+            Descargar {{ page.documento.title }}
+        </a>
+        {% endif %}
+
+        {% if page.fecha_documento %}
+        <p>Fecha del documento: {{ page.fecha_documento|date:"d/m/Y" }}</p>
         {% endif %}
     </div>
 </section>

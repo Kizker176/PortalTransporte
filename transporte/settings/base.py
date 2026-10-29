@@ -51,6 +51,15 @@ INSTALLED_APPS = [
     "base",
 ]
 
+WAGTAIL_EMBED_FINDERS = [
+    {
+        'CLASS': 'home.embeds.CustomIframeFinder', # Asegúrate que la ruta coincida con tu app
+    },
+    {
+        'CLASS': 'wagtail.embeds.finders.oembed' # Mantiene los embeds normales como YouTube, Vimeo, etc.
+    }
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

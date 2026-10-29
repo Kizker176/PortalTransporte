@@ -64,7 +64,7 @@
     {% endif %}
 
     <aside class="menu-lateral">
-        <h2>Enlaces de interés</h2>
+        <h2>Destacados</h2>
 
         <nav aria-label="Enlaces de interés">
             {% for bloque in page.menu_lateral %}
@@ -138,54 +138,6 @@
                 disponibles para la ciudadanía.
             </p>
             {% endfor %}
-        </div>
-    </div>
-</section>
-
-<section class="seccion noticias" id="noticias">
-    <div class="contenedor">
-        <div class="encabezado-seccion">
-            <span class="sobrelinea">Información oficial</span>
-            <h2>Últimas noticias</h2>
-        </div>
-
-        <div class="rejilla-noticias">
-            {% for noticia in noticias %}
-            <article class="tarjeta-noticia">
-                {% if noticia.imagen %}
-                {% image noticia.imagen fill-600x350 as noticia_img %}
-                <img src="{{ noticia_img.url }}" alt="{{ noticia.title }}" loading="lazy">
-                {% endif %}
-
-                <div class="tarjeta-contenido">
-                    {% if noticia.fecha_publicacion %}
-                    <time datetime="{{ noticia.fecha_publicacion|date:'Y-m-d' }}">
-                        {{ noticia.fecha_publicacion|date:"d/m/Y" }}
-                    </time>
-                    {% endif %}
-
-                    <h3>
-                        <a href="{% pageurl noticia %}">
-                            {{ noticia.title }}
-                        </a>
-                    </h3>
-
-                    <p>{{ noticia.resumen }}</p>
-
-                    <a href="{% pageurl noticia %}" class="enlace-mas">
-                        Leer noticia →
-                    </a>
-                </div>
-            </article>
-            {% empty %}
-            <p>Próximamente publicaremos nuevas noticias.</p>
-            {% endfor %}
-        </div>
-
-        <div class="centrado">
-            <a href="/noticias/" class="boton boton-verde">
-                Ver todas las noticias
-            </a>
         </div>
     </div>
 </section>
