@@ -7,7 +7,7 @@ from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.fields import RichTextField
-from wagtail.documents import get_document_model_string
+from wagtail.documents import get_document_model
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.blocks import PageChooserBlock
 from wagtail.contrib.settings.models import (
@@ -347,7 +347,9 @@ class SectionPage(Page):
     ]
 
     subpage_types = [
+        "home.HomePage",
         "home.StandardPage",
+        "home.SectionPage",
         "home.DocumentPage",
     ]
 
@@ -383,8 +385,13 @@ class DocumentPage(Page):
         verbose_name="Descripción"
     )
 
+    body = RichTextField(
+        blank=True,
+        verbose_name="Contenido"
+    )
+
     documento = models.ForeignKey(
-        "wagtaildocs.Document",
+        get_document_model(),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -400,6 +407,7 @@ class DocumentPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("descripcion"),
+        FieldPanel("body"),
         FieldPanel("documento"),
         FieldPanel("fecha_documento"),
     ]
