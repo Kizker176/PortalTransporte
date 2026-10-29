@@ -1,0 +1,82 @@
+{% load wagtailimages_tags %}{% if footer %}
+<div class="footer-contenido">
+
+    <div class="footer-encabezado {% if not footer.logo_izquierdo %}sin-logo{% endif %}">
+
+        {% if footer.logo_izquierdo %}
+        <div class="footer-logos ">
+            {% image footer.logo_izquierdo width-200 %}
+        </div>
+        {% endif %}
+
+        <div class="footer-fila-superior ">
+            {% for seccion in footer.secciones_footer.all %} {% if forloop.first or forloop.counter == 2 %}
+            <section class="footer-seccion footer-superior ">
+                <h3 data-tipografia="{{ seccion.tipografia_titulo }} " data-tamano="{{ seccion.tamano_titulo }}">{{ seccion.titulo }}</h3>
+
+                <ul class="footer-lista-enlaces ">
+                    {% for enlace in seccion.enlaces.all %}
+                    <li>
+                        <a href="{{ enlace.url }} " data-tipografia="{{ enlace.tipografia }} " data-tamano="{{ enlace.tamano_letra }}"><i class="{{ enlace.icono }} " aria-hidden="true "></i>{{ enlace.titulo }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %} {% endfor %}
+        </div>
+    </div>
+
+    <div class="footer-inferior-contenedor {% if not footer.logo_derecho %}sin-logo{% endif %}">
+
+        <div class="footer-logos ">
+            {% if footer.logo_derecho %} {% image footer.logo_derecho width-200 %} {% endif %}
+        </div>
+
+        <div class="footer-fila-inferior ">
+            {% for seccion in footer.secciones_footer.all %} {% if forloop.counter >= 3 %}
+            <section class="footer-seccion ">
+                <h3 data-tipografia="{{ seccion.tipografia_titulo }} " data-tamano="{{ seccion.tamano_titulo }}">{{ seccion.titulo }}</h3>
+
+                <ul class="footer-lista-enlaces ">
+                    {% for enlace in seccion.enlaces.all %}
+                    <li>
+                        <a href="{{ enlace.url }} " data-tipografia="{{ enlace.tipografia }} " data-tamano="{{ enlace.tamano_letra }} "><i class="{{ enlace.icono }} " aria-hidden="true "></i>{{ enlace.titulo }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %} {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endif %}
+<script>
+    // Aplicar tipografía y tamaño a los títulos
+    document.querySelectorAll('.footer-seccion h3').forEach(titulo => {
+        const tipografia = titulo.dataset.tipografia;
+        const tamano = Number(titulo.dataset.tamano);
+
+        if (tipografia) {
+            titulo.style.fontFamily = tipografia;
+        }
+
+        if (Number.isFinite(tamano) && tamano > 0) {
+            titulo.style.fontSize = `${tamano}px`;
+        }
+    });
+
+    // Aplicar tipografía y tamaño a los enlaces
+    document.querySelectorAll('.footer-lista-enlaces a').forEach(enlace => {
+        const tipografia = enlace.dataset.tipografia;
+        const tamano = Number(enlace.dataset.tamano);
+
+        if (tipografia) {
+            enlace.style.fontFamily = tipografia;
+        }
+
+        if (Number.isFinite(tamano) && tamano > 0) {
+            enlace.style.fontSize = `${tamano}px`;
+        }
+    });
+</script>
